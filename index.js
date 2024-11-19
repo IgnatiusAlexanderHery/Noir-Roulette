@@ -1,12 +1,16 @@
 const http = require("http");
 const app = require("express")();
+
+const port = process.env.PORT || 9091; // Menggunakan port dari environment variable jika tersedia, atau default 9091
 app.get("/", (req, res) => res.sendFile(__dirname + "/index.html"));
 
-app.listen(9091, () => console.log("Listening on http port 9091"));
+app.listen(port, () => console.log(`Listening on HTTP port ${port}`));
+
+// Inisialisasi WebSocket Server
 const websocketServer = require("websocket").server;
 const httpServer = http.createServer();
-httpServer.listen(9090, () => console.log("Listening.. on 9090"));
-//hashmap clients
+httpServer.listen(port + 1, () => console.log(`Listening on WebSocket port ${port + 1}`));
+
 const clients = {};
 const games = {};
 

@@ -19,7 +19,10 @@
       let gameId = null;
       let playerColor = null;
 
-      let ws = new WebSocket("https://ignatiusalexanderhery.github.io/Noir-Roulette:9090");
+      const isLocal = window.location.hostname === "localhost";
+      const wsUrl = isLocal ? "ws://localhost:9092" : window.location.hostname;
+      let ws = new WebSocket(wsUrl);
+
       const btnCreate = document.getElementById("btnCreate");
       const btnJoin = document.getElementById("btnJoin");
       const txtGameId = document.getElementById("txtGameId");
