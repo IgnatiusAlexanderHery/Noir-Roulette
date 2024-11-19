@@ -29,7 +29,7 @@
       //wiring events
       btnJoin.addEventListener("click", (e) => {
         if (gameId === null) gameId = txtGameId.value;
-
+        btnJoin.disabled = true;
         const payLoad = {
           method: "join",
           clientId: clientId,
@@ -40,6 +40,7 @@
       });
 
       btnCreate.addEventListener("click", (e) => {
+        btnCreate.disabled = true;
         const payLoad = {
           method: "create",
           clientId: clientId,
