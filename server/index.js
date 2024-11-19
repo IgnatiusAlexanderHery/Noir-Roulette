@@ -10,6 +10,8 @@ const port = 8000;
 const connections = {};
 const users = {};
 
+console.log("index.js Running");
+
 wsServer.on("connection", (connection, request) => {
   const { username } = url.parse(request.url, true).query;
   console.log(`${username} connected`);

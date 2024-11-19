@@ -21,7 +21,7 @@ const renderUsersList = (users) => {
 };
 
 export function Home({ username }) {
-  const WS_URL = `ws://https://noir-roulette-server.vercel.app`;
+  const WS_URL = `https://noir-roulette-server.vercel.app`;
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(WS_URL, {
     share: true,
     queryParams: { username },
