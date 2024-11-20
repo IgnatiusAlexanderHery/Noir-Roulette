@@ -2,10 +2,10 @@ const http = require("http");
 const app = require("express")();
 app.get("/", (req, res) => res.sendFile(__dirname + "/index.html"));
 
-app.listen(9091, () => console.log("Listening on http port 9091"));
+app.listen(3000, () => console.log("Listening on http port 3000"));
 const websocketServer = require("websocket").server;
 const httpServer = http.createServer();
-httpServer.listen(9090, () => console.log("Listening.. on 9090"));
+httpServer.listen(3001, () => console.log("Listening.. on 3001"));
 //hashmap clients
 const clients = {};
 const games = {};
@@ -14,6 +14,7 @@ const wsServer = new websocketServer({
   httpServer: httpServer,
 });
 wsServer.on("request", (request) => {
+  console.log("Websocket Requested");
   //connect
   const connection = request.accept(null, request.origin);
   connection.on("open", () => console.log("opened!"));
