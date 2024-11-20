@@ -1,18 +1,23 @@
 const http = require("http");
-const app = require("express")();
+const express = require("express");
+const websocketServer = require("websocket").server;
+
+const app = express();
+const httpServer = http.createServer(app);
+
 app.get("/", (req, res) => res.sendFile(__dirname + "/index.html"));
 
-app.listen(3000, () => console.log("Listening on http port 3000"));
-const websocketServer = require("websocket").server;
-const httpServer = http.createServer();
-httpServer.listen(3001, () => console.log("Listening.. on 3001"));
+httpServer.listen(3000, () => console.log("Server is listening on port 3000"));
+
+// Setup WebSocket server
+const wsServer = new websocketServer({
+  httpServer: httpServer,
+});
+
 //hashmap clients
 const clients = {};
 const games = {};
 
-const wsServer = new websocketServer({
-  httpServer: httpServer,
-});
 wsServer.on("request", (request) => {
   console.log("Websocket Requested");
   //connect
@@ -46,26 +51,30 @@ wsServer.on("request", (request) => {
       const clientId = result.clientId;
       const gameId = result.gameId;
       const game = games[gameId];
+
       if (game.clients.length >= 3) {
-        //sorry max players reach
+        // Jika pemain sudah penuh
         return;
       }
+
       const color = { 0: "Red", 1: "Green", 2: "Blue" }[game.clients.length];
       game.clients.push({
         clientId: clientId,
         color: color,
       });
-      //start the game
-      if (game.clients.length === 3) updateGameState();
 
+      // Kirim state terbaru ke semua pemain di room, termasuk pemain yang baru bergabung
       const payLoad = {
         method: "join",
         game: game,
       };
-      //loop through all clients and tell them that people has joined
+
       game.clients.forEach((c) => {
         clients[c.clientId].connection.send(JSON.stringify(payLoad));
       });
+
+      // Panggil updateGameState agar semua pemain mendapatkan informasi terkini
+      updateGameState();
     }
     //a user plays
     if (result.method === "play") {
