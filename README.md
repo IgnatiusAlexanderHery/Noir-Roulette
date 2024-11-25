@@ -1,14 +1,13 @@
-To run the server, run:
+Get Started
 
 ```
+Install  Server
 npm install
-npm start
-```
 
-To run the client simultaneously, open a new terminal shell, and run:
-
-```
+Install Client
 cd client
 npm install
-npm start 
+
+Run Both Server and  Client
+npm run dev
 ```
