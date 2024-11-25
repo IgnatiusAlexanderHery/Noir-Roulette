@@ -21,7 +21,8 @@ const renderUsersList = (users) => {
 };
 
 export function Home({ username }) {
-  const WS_URL = `ws://127.0.0.1:3000`;
+  const WS_URL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:3000";
+  console.log(WS_URL);
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(WS_URL, {
     share: true,
     queryParams: { username },
