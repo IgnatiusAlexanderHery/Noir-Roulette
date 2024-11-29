@@ -1,56 +1,58 @@
-import { Cursor } from "./Cursor";
+import React, { useState, useEffect } from "react";
 import useWebSocket from "react-use-websocket";
-import React, { useEffect, useRef } from "react";
-import throttle from "lodash.throttle";
 
-const renderCursors = (users) => {
-  return Object.keys(users).map((uuid) => {
-    const user = users[uuid];
-    return <Cursor key={uuid} userId={uuid} point={[user.state.x, user.state.y]} />;
-  });
-};
-
-const renderUsersList = (users) => {
-  return (
-    <ul>
-      {Object.keys(users).map((uuid) => {
-        return <li key={uuid}>{JSON.stringify(users[uuid])}</li>;
-      })}
-    </ul>
-  );
-};
-
-export function Home({ username }) {
+export function Home({ username, room }) {
   const WS_URL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:3000";
-  console.log(WS_URL);
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(WS_URL, {
     share: true,
-    queryParams: { username },
+    queryParams: { username, room },
   });
-
-  const THROTTLE = 50;
-  const sendJsonMessageThrottled = useRef(throttle(sendJsonMessage, THROTTLE));
+  const [game, setGame] = useState(null);
 
   useEffect(() => {
-    sendJsonMessage({
-      x: 0,
-      y: 0,
-    });
-    window.addEventListener("mousemove", (e) => {
-      sendJsonMessageThrottled.current({
-        x: e.clientX,
-        y: e.clientY,
-      });
-    });
-  }, []);
+    if (lastJsonMessage) setGame(lastJsonMessage.game);
+  }, [lastJsonMessage]);
 
-  if (lastJsonMessage) {
-    return (
-      <>
-        {renderUsersList(lastJsonMessage)}
-        {/* ideally batch updates */}
-        {renderCursors(lastJsonMessage)}
-      </>
-    );
-  }
+  const handleShoot = (targetId, bulletType) => {
+    sendJsonMessage({
+      action: "shoot",
+      shooterId: username,
+      targetId,
+    });
+  };
+
+  if (!game) return <p>Waiting for players...</p>;
+
+  const currentTurnPlayer = game.players[game.turnIndex];
+
+  return (
+    <div>
+      <h1>Game Room: {room}</h1>
+      <h2>Turn: {currentTurnPlayer.username}</h2>
+      <h3>Ammo: {game.ammo.length}</h3>
+
+      <div style={{ display: "flex", justifyContent: "space-around" }}>
+        {game.players.map((player) => (
+          <div key={player.id} style={{ border: "1px solid black", padding: 20 }}>
+            <p>
+              {player.username} - Lives: {player.lives}
+            </p>
+            {currentTurnPlayer.username === username && player.lives > 0 && (
+            <>
+              {player.id === currentTurnPlayer.id ? ( // Jika pemain adalah dirinya sendiri
+                <button onClick={() => handleShoot(player.id)}>
+                  Shoot Yourself
+                </button>
+              ) : ( // Jika pemain adalah lawan
+                <button onClick={() => handleShoot(player.id)}>
+                  Shoot Enemy
+                </button>
+              )}
+            </>
+          )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }

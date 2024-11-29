@@ -3,65 +3,105 @@ const http = require("http");
 
 const server = http.createServer();
 const wsServer = new WebSocketServer({ server });
-
 const port = 3000;
 
 server.listen(port, () => {
   console.log(`WebSocket server is running on port ${port}`);
 });
 
+// Game state
 const connections = {};
-const users = {};
+const games = {};
 
-const handleMessage = (bytes, uuid) => {
-  const message = JSON.parse(bytes.toString());
-  if (message.username) console.log(`${message.username} connected`);
-  const user = users[uuid];
-  user.state = message;
-  broadcast();
+// Helper functions
+const guid = () =>
+  [1, 1, 1, 1].map(() => Math.random().toString(16).slice(2, 6)).join("-");
 
-  console.log(`${user.username} updated their updated state: ${JSON.stringify(user.state)}`);
+const initializeAmmo = () => {
+  const realBullets  = Math.floor(Math.random() * 7);
+  const ammo = Array(realBullets).fill("real").concat(Array(6-realBullets).fill("fake"));
+  console.log("Ammo List : " + ammo)
+  return ammo.sort(() => Math.random() - 0.5);
 };
 
-const handleClose = (uuid) => {
-  console.log(`${users[uuid].username} disconnected`);
-  delete connections[uuid];
-  delete users[uuid];
-  broadcast();
+// Handle game creation
+const createGame = (roomId) => {
+  games[roomId] = {
+    players: [],
+    turnIndex: 0,
+    ammo: initializeAmmo(),
+    started: false,
+  };
 };
 
-const broadcast = () => {
-  Object.keys(connections).forEach((uuid) => {
-    const connection = connections[uuid];
-    const message = JSON.stringify(users);
-    connection.send(message);
+// Broadcast game state
+const broadcastGame = (roomId) => {
+  const game = games[roomId];
+  game.players.forEach((player) => {
+    const connection = connections[player.id];
+    connection.send(JSON.stringify({ game }));
   });
 };
 
+// WebSocket connection
 wsServer.on("connection", (connection, request) => {
-  const queryString = request.url.split("?")[1];
-
-  console.log(queryString);
-  // Split query string into key-value pairs
-  const params = new URLSearchParams(queryString);
-  console.log(params);
-  console.log(params.get("username"));
-  // Get the username from the query parameters
+  const params = new URLSearchParams(request.url.split("?")[1]);
   const username = params.get("username");
-  console.log(`${username} connected`);
-  const uuid = guid();
-  connections[uuid] = connection;
-  users[uuid] = {
-    username,
-    state: {},
-  };
-  connection.on("message", (message) => handleMessage(message, uuid));
-  connection.on("close", () => handleClose(uuid));
+  const roomId = params.get("room") || "default";
+  const playerId = guid();
+  console.log(params)
+
+  console.log("Username : " + username + " has join room " + roomId);
+
+  if (!games[roomId]) createGame(roomId);
+
+  const game = games[roomId];
+  const newPlayer = { id: playerId, username, lives: 3 };
+  game.players.push(newPlayer);
+  connections[playerId] = connection;
+
+  if (game.players.length === 4) game.started = true;
+
+  broadcastGame(roomId);
+
+  connection.on("message", (message) => {
+    const data = JSON.parse(message);
+    if (data.action === "shoot") {
+      handleShoot(game, data.shooterId, data.targetId, data.bulletType);
+      broadcastGame(roomId);
+    }
+  });
+
+  connection.on("close", () => {
+    game.players = game.players.filter((player) => player.id !== playerId);
+    delete connections[playerId];
+    broadcastGame(roomId);
+  });
 });
 
-function S4() {
-  return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-}
+// Shooting logic
+const handleShoot = (game, shooterId, targetId) => {
+  const target = game.players.find((player) => player.id === targetId);
 
-// then to call it, plus stitch in '4' in the third group
-const guid = () => (S4() + S4() + "-" + S4() + "-4" + S4().substr(0, 3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+  console.log("Ammo : " + game.ammo)
+  
+  if (game.ammo[0] === "real") {
+    console.log("Ammo Is Real, " + shooterId + " Shoot " + target.username )
+    target.lives -= 1;
+  }
+  else{
+    console.log("Ammo Is False, " + target.username + " Survive")
+  }
+  game.ammo.shift(); // Remove used bullet
+
+  if (game.ammo.length === 0) {
+    console.log("Ammo is empty. Reinitializing...");
+    game.ammo = initializeAmmo();
+  }
+  
+  if (target.lives <= 0) {
+    console.log(`${target.username} is eliminated!`);
+  }
+
+  game.turnIndex = (game.turnIndex + 1) % game.players.length;
+};
