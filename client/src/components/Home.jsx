@@ -35,7 +35,11 @@ export function Home({ username, room }) {
         {game.players.map((player) => (
           <div key={player.id} style={{ border: "1px solid black", padding: 20 }}>
             <p>
-              {player.username} - Lives: {player.lives}
+              {player.username} - Lives: {player.lives} {player.username  === username && 
+              (
+                <p>You</p>
+              )
+              }
             </p>
             {currentTurnPlayer.username === username && player.lives > 0 && (
             <>

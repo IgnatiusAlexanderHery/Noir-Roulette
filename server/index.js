@@ -90,7 +90,7 @@ const handleShoot = (game, shooterId, targetId) => {
     target.lives -= 1;
   }
   else{
-    console.log("Ammo Is False, " + target.username + " Survive")
+    console.log("Ammo Is Fake, " + target.username + " Survive")
   }
   game.ammo.shift(); // Remove used bullet
 
