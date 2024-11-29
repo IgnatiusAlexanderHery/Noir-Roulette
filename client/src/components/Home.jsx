@@ -13,7 +13,7 @@ export function Home({ username, room }) {
     if (lastJsonMessage) setGame(lastJsonMessage.game);
   }, [lastJsonMessage]);
 
-  const handleShoot = (targetId, bulletType) => {
+  const handleShoot = (targetId) => {
     sendJsonMessage({
       action: "shoot",
       shooterId: username,
