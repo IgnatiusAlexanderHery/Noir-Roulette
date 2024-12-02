@@ -76,7 +76,8 @@ wsServer.on("connection", (connection, request) => {
   game.players.push(newPlayer);
   connections[playerId] = connection;
 
-  if (game.players.length === 2) game.started = true;
+  game.started =  game.players.length >= 2 ? true  : false;
+  console.log(game);
 
   broadcastGame(roomId);
 
