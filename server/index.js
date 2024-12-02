@@ -49,35 +49,53 @@ wsServer.on("connection", (connection, request) => {
   const username = params.get("username");
   const roomId = params.get("room") || "default";
   const playerId = guid();
-  console.log(params)
 
-  console.log("Username : " + username + " has join room " + roomId);
+  console.log("Username : " + username + " is attempting to join room " + roomId);
 
   if (!games[roomId]) createGame(roomId);
 
   const game = games[roomId];
+
+  // Check if username already exists
+  if (game.players.find((player) => player.username === username)) {
+    console.log("Username already exists: " + username);
+    connection.send(JSON.stringify({ error: "Username already exists in the room." }));
+    connection.close();
+    return;
+  }
+
+  // Check if the room is full
+  if (game.players.length >= 4) {
+    console.log("Room is full: " + roomId);
+    connection.send(JSON.stringify({ error: "The room is full." }));
+    connection.close();
+    return;
+  }
+
   const newPlayer = { id: playerId, username, lives: 3 };
   game.players.push(newPlayer);
   connections[playerId] = connection;
 
-  if (game.players.length === 4) game.started = true;
+  if (game.players.length === 2) game.started = true;
 
   broadcastGame(roomId);
 
   connection.on("message", (message) => {
     const data = JSON.parse(message);
     if (data.action === "shoot") {
-      handleShoot(game, data.shooterId, data.targetId, data.bulletType);
+      handleShoot(game, data.shooterId, data.targetId);
       broadcastGame(roomId);
     }
   });
 
   connection.on("close", () => {
     game.players = game.players.filter((player) => player.id !== playerId);
+    console.log("Player " + username + " has left room " + roomId);
     delete connections[playerId];
     broadcastGame(roomId);
   });
 });
+
 
 // Shooting logic
 const handleShoot = (game, shooterId, targetId) => {

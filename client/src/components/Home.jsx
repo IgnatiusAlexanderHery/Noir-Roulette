@@ -3,31 +3,34 @@ import useWebSocket from "react-use-websocket";
 
 export function Home({ username, room }) {
   const WS_URL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:3000";
-  const { sendJsonMessage, lastJsonMessage } = useWebSocket(WS_URL, {
+  const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(WS_URL, {
     share: true,
     queryParams: { username, room },
+    onOpen: () => console.log("WebSocket connected"),
+    onClose: () => console.log("WebSocket disconnected"),
+    onError: (error) => console.error("WebSocket error:", error),
   });
+
   const [game, setGame] = useState(null);
 
   useEffect(() => {
-    if (lastJsonMessage) setGame(lastJsonMessage.game);
+    if (lastJsonMessage) {
+      if (lastJsonMessage.error) {
+        alert(lastJsonMessage.error); // Tampilkan alert jika ada error
+        window.location.reload(); // Reload halaman kembali ke login screen
+      } else {
+        setGame(lastJsonMessage.game);
+      }
+    }
   }, [lastJsonMessage]);
 
-  const handleShoot = (targetId) => {
-    sendJsonMessage({
-      action: "shoot",
-      shooterId: username,
-      targetId,
-    });
-  };
-
-  if (!game) return <p>Waiting for players...</p>;
+  if (!game || !game.started) return <p>Waiting for players...</p>;
 
   const currentTurnPlayer = game.players[game.turnIndex];
 
   return (
-    <div>
-      <h1>Game Room: {room}</h1>
+    <div className="">
+      <h1 className="text-red-700">Game Room: {room}</h1>
       <h2>Turn: {currentTurnPlayer.username}</h2>
       <h3>Ammo: {game.ammo.length}</h3>
 
@@ -37,7 +40,9 @@ export function Home({ username, room }) {
             <p>
               {player.username} - Lives: {player.lives} {player.username  === username && 
               (
-                <p>You</p>
+                <span style={{ color: "red" }}>
+                  You
+                </span>
               )
               }
             </p>
