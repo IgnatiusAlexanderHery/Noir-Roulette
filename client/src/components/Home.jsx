@@ -24,6 +24,14 @@ export function Home({ username, room }) {
     }
   }, [lastJsonMessage]);
 
+  const handleShoot = (targetId) => {
+    sendJsonMessage({
+      action: "shoot",
+      shooterId: username,
+      targetId,
+    });
+  };
+
   if (!game || !game.started) return <p>Waiting for players...</p>;
 
   const currentTurnPlayer = game.players[game.turnIndex];
