@@ -1,0 +1,17 @@
+.pixelart {
+    image-rendering: pixelated;
+  }
+  
+  @keyframes moveSpritesheet {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-100%, 0, 0); /* Geser total frame */
+    }
+  }
+  
+  .animate-move-spritesheet {
+    animation: moveSpritesheet 1s steps(11) infinite; /* 11 steps sesuai jumlah frame */
+  }
+  

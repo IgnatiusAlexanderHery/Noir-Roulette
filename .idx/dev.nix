@@ -16,7 +16,7 @@
 
   # Sets environment variables in the workspace
   env = {
-    REACT_APP_WEBSOCKET_URL="https://3000-idx-noir-roulettegit-1732510821120.cluster-fu5knmr55rd44vy7k7pxk74ams.cloudworkstations.dev/?monospaceUid=85135";
+    REACT_APP_WEBSOCKET_URL="https://3000-idx-noir-roulettegit-1732510821120.cluster-fu5knmr55rd44vy7k7pxk74ams.cloudworkstations.dev/";
   };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"

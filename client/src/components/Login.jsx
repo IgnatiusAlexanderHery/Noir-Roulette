@@ -5,7 +5,7 @@ export function Login({ onSubmit }) {
     const [room, setRoom] = useState('');
 
     return (
-        <div className='flex flex-col items-center justify-center h-screen '>
+        <div className='bg-slate-400 flex flex-col items-center justify-center h-screen '>
             <h1>Welcome</h1>
             <p>What should people call you?</p>
             <form

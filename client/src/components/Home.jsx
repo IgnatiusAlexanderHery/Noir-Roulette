@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import useWebSocket from "react-use-websocket";
+import { LivesBulletImg, BlankBulletImg } from "./Image";
+import { PlayerBox } from "./PlayerBox";
 
 export function Home({ username, room }) {
   const WS_URL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:3000";
   const { sendJsonMessage, lastJsonMessage} = useWebSocket(WS_URL, {
     share: true,
     queryParams: { username, room },
-    onOpen: () => console.log("WebSocket connected"),
+    onOpen: () => console.log("WebSocket connected to " + WS_URL),
     onClose: () => console.log("WebSocket disconnected"),
     onError: (error) => console.error("WebSocket error:", error),
   });
@@ -62,69 +64,56 @@ export function Home({ username, room }) {
   const currentTurnPlayer = game.players[game.turnIndex];
 
   return (
-<div className="relative h-screen bg-gray-100">
+<div className="grid bg-gray-100 grid-cols-1 md:grid-cols-3 grid-rows-3 gap-4">
   {/* Header */}
-  <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-center">
-    <h1 className="text-xl font-bold text-red-700 md:text-2xl">Game Room: {room}</h1>
-    <h2 className="mt-1 text-md md:text-lg">Turn: {currentTurnPlayer.username}</h2>
+  <div className="row-start-1 col-span-3 flex flex-col items-center justify-center text-center">
+    <h1 className="text-lg font-bold text-red-700 sm:text-md md:text-2xl">Game Room: {room}</h1>
+    <h2 className="mt-1 text-sm md:text-lg">Turn: {currentTurnPlayer.username}</h2>
     <h3 className="text-sm text-gray-600">Ammo:</h3>
     <div className="flex gap-2 mt-2">
       {game.ammo
         .sort((a, b) => (a === "real" ? -1 : 1)) // Opsional: Sort 'real' ke depan
         .map((ammo, index) => (
-          <img
-            key={index}
-            src={
-              ammo === "real"
-                ? "https://via.placeholder.com/20x20.png?text=Real" // Gambar merah
-                : "https://via.placeholder.com/20x20.png?text=Fake" // Gambar abu-abu
-            }
-            alt={ammo}
-            className="w-5 h-5"
-          />
+          ammo === "real" ? <LivesBulletImg key={index} /> : <BlankBulletImg key={index} />
         ))}
     </div>
   </div>
 
-  {/* Player Containers */}
-  <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 md:grid-cols-4 absolute inset-0 p-4 items-center justify-center">
-    {game.players.map((player, index) => (
-      <div
-        key={player.id}
-        className="flex flex-col items-center justify-between w-full max-w-[120px] sm:max-w-[150px] md:max-w-[200px] p-4 bg-white border border-black rounded-md shadow-md"
-      >
-        <img
-          src="https://via.placeholder.com/100x100.png?text=Player"
-          alt="Player Avatar"
-          className="w-20 h-20 object-cover rounded-full bg-gray-200"
-        />
-        <p className="text-center mt-2 text-sm md:text-md">
-          {player.username} - Lives: {player.lives}{" "}
-          {player.username === username && (
-            <span className="text-red-500 font-bold">(You)</span>
-          )}
-        </p>
-        {currentTurnPlayer.username === username && player.lives > 0 && (
-          <>
-            {player.id === currentTurnPlayer.id ? (
-              <button
-                className="px-3 py-1 mt-2 text-xs md:text-sm text-white bg-red-600 rounded hover:bg-red-700"
-                onClick={() => handleShoot(player.id)}
-              >
-                Shoot Yourself
-              </button>
-            ) : (
-              <button
-                className="px-3 py-1 mt-2 text-xs md:text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
-                onClick={() => handleShoot(player.id)}
-              >
-                Shoot Enemy
-              </button>
-            )}
-          </>
-        )}
-      </div>
-    ))}
+  {/* Player Top-Left */}
+  <div className="row-start-2 col-start-1 flex flex-col items-center justify-center p-4 sm:p-2">
+    {game.players[0] && (
+      <PlayerBox player={game.players[0]} username={username} currentTurnPlayer={currentTurnPlayer} handleShoot={handleShoot} />
+    )}
+  </div>
+
+  {/* Player Top-Right */}
+  <div className="row-start-2 col-start-3 flex flex-col items-center justify-center p-4 sm:p-2">
+    {game.players[1] && (
+      <PlayerBox player={game.players[1]} username={username} currentTurnPlayer={currentTurnPlayer} handleShoot={handleShoot} />
+    )}
+  </div>
+
+  {/* Center Image */}
+  <div className="row-start-2 col-start-2 flex items-center justify-center ">
+    <img
+      src="https://via.placeholder.com/192x192.png?text=Center"
+      alt="Center Element"
+      className="w-48 h-48"
+    />
+  </div>
+
+  {/* Player Bottom-Left */}
+  <div className="row-start-3 col-start-1 flex flex-col items-center justify-center p-4 sm:p-2">
+    {game.players[2] && (
+      <PlayerBox player={game.players[2]} username={username} currentTurnPlayer={currentTurnPlayer} handleShoot={handleShoot} />
+    )}
+  </div>
+
+  {/* Player Bottom-Right */}
+  <div className="row-start-3 col-start-3 flex flex-col items-center justify-center p-4 sm:p-2">
+    {game.players[3] && (
+      <PlayerBox player={game.players[3]} username={username} currentTurnPlayer={currentTurnPlayer} handleShoot={handleShoot} />
+    )}
   </div>
 </div>
 
