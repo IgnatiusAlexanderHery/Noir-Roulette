@@ -31,6 +31,7 @@ const createGame = (roomId) => {
     turnIndex: 0,
     ammo: initializeAmmo(),
     started: false,
+    isLiveBullet: false,
   };
 };
 
@@ -101,15 +102,18 @@ wsServer.on("connection", (connection, request) => {
 // Shooting logic
 const handleShoot = (game, shooterId, targetId) => {
   const target = game.players.find((player) => player.id === targetId);
-
-  console.log("Ammo : " + game.ammo)
   
   if (game.ammo[0] === "real") {
     console.log("Ammo Is Real, " + shooterId + " Shoot " + target.username )
     target.lives -= 1;
+    game.isLiveBullet=true;
   }
   else{
     console.log("Ammo Is Fake, " + target.username + " Survive")
+    if(shooterId === target.username){
+      game.turnIndex = (game.turnIndex - 1) % game.players.length;
+    }
+    game.isLiveBullet=false;
   }
   game.ammo.shift(); // Remove used bullet
 
@@ -122,5 +126,10 @@ const handleShoot = (game, shooterId, targetId) => {
     console.log(`${target.username} is eliminated!`);
   }
 
+  console.log("Ammo : " + game.ammo)
   game.turnIndex = (game.turnIndex + 1) % game.players.length;
+
+  while(game.players[game.turnIndex].lives <= 0){
+    game.turnIndex = (game.turnIndex + 1) % game.players.length;
+  }
 };

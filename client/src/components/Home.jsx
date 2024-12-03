@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import useWebSocket from "react-use-websocket";
 import { LivesBulletImg, BlankBulletImg } from "./Image";
 import { PlayerBox } from "./PlayerBox";
+import gunShoot from '../assets/gun-shoot.wav';
 
 export function Home({ username, room }) {
   const WS_URL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:3000";
@@ -22,6 +23,9 @@ export function Home({ username, room }) {
         window.location.reload(); // Reload halaman kembali ke login screen
       } else {
         setGame(lastJsonMessage.game);
+        if(lastJsonMessage.game.isLiveBullet){
+          new Audio(gunShoot).play();
+        }
       }
       console.log(lastJsonMessage);
     }
