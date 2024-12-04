@@ -34,6 +34,7 @@ const createGame = (roomId) => {
     turnIndex: 0,
     ammo: initializeAmmo(),
     started: false,
+    lastBullet: null,
   };
 };
 
@@ -115,12 +116,14 @@ const handleShoot = (game, shooterId, targetId) => {
   if (game.ammo[0] === "real") {
     console.log("Ammo Is Real, " + shooterId + " Shoot " + target.username )
     target.lives -= 1;
+    game.lastBullet = true;
   }
   else{
     console.log("Ammo Is Fake, " + target.username + " Survive")
     if(shooterId === target.username){
       game.turnIndex = (game.turnIndex - 1) % game.players.length;
     }
+    game.lastBullet = false;
   }
   game.ammo.shift(); // Remove used bullet
 

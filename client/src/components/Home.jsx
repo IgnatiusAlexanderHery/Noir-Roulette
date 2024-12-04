@@ -19,7 +19,26 @@ export function Home({ username, room }) {
   });
 
   const [game, setGame] = useState(null);
-  const [bulletType, setBulletType] = useState(null);
+  // const [bulletType, setBulletType] = useState(null);
+
+  function playGunSounds(lastJsonMessage) {
+    if (lastJsonMessage.game.started) {
+      console.log(lastJsonMessage);
+      if (lastJsonMessage.game.lastBullet === true) {
+        console.log("live");
+        new Audio(gunShoot).play();
+      } else if (lastJsonMessage.game.lastBullet === false){
+        console.log("blank");
+        new Audio(gunShootBlank).play();
+      }
+      if (lastJsonMessage.game.ammo.length === 6 && lastJsonMessage.game.lastBullet !== null) {
+        console.log("reload");
+        setTimeout(() => {
+          new Audio(gunReload).play();
+        }, 1000);
+      }
+    }
+  }
 
   useEffect(() => {
     if (lastJsonMessage) {
@@ -28,33 +47,27 @@ export function Home({ username, room }) {
         window.location.reload(); // Reload halaman kembali ke login screen
       } else {
         setGame(lastJsonMessage.game);
-        setBulletType(lastJsonMessage.game.ammo[0]);
+        // setBulletType(lastJsonMessage.game.ammo[0]);
+        playGunSounds(lastJsonMessage);
       }
     }
   }, [lastJsonMessage]);
 
   const handleShoot = (targetId) => {
-    console.log(lastJsonMessage);
-    console.log(bulletType);
+    // console.log(lastJsonMessage);
+    // console.log(bulletType);
 
-    if(lastJsonMessage.game.ammo.length <= 6){
-      if(bulletType === 'real'){
-        console.log("live")
-      new Audio(gunShoot).play();
-      }
-      else {
-        console.log("blank")
-        new Audio(gunShootBlank).play();
-      }
-    }
+    // if(lastJsonMessage.game.ammo.length <= 6){
+    //   if(bulletType === 'real'){
+    //     console.log("live")
+    //   new Audio(gunShoot).play();
+    //   }
+    //   else {
+    //     console.log("blank")
+    //     new Audio(gunShootBlank).play();
+    //   }
+    // }
 
-    if(lastJsonMessage.game.ammo.length === 1){
-      console.log("reload")
-      setTimeout(() => {
-        new Audio(gunReload).play();
-      }, 2000);
-    }
-    
     sendJsonMessage({
       action: "shoot",
       shooterId: username,
