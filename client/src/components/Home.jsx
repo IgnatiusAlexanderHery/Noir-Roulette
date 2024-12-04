@@ -3,6 +3,10 @@ import useWebSocket from "react-use-websocket";
 import { LivesBulletImg, BlankBulletImg } from "./Image";
 import { PlayerBox } from "./PlayerBox";
 import gunShoot from '../assets/gun-shoot.wav';
+import gunShootBlank from '../assets/gun-shoot-blank.wav';
+import gunReload from '../assets/gun-reload.wav';
+
+
 
 export function Home({ username, room }) {
   const WS_URL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:3000";
@@ -15,6 +19,7 @@ export function Home({ username, room }) {
   });
 
   const [game, setGame] = useState(null);
+  const [bulletType, setBulletType] = useState(null);
 
   useEffect(() => {
     if (lastJsonMessage) {
@@ -23,15 +28,33 @@ export function Home({ username, room }) {
         window.location.reload(); // Reload halaman kembali ke login screen
       } else {
         setGame(lastJsonMessage.game);
-        if(lastJsonMessage.game.isLiveBullet){
-          new Audio(gunShoot).play();
-        }
+        setBulletType(lastJsonMessage.game.ammo[0]);
       }
-      console.log(lastJsonMessage);
     }
   }, [lastJsonMessage]);
 
   const handleShoot = (targetId) => {
+    console.log(lastJsonMessage);
+    console.log(bulletType);
+
+    if(lastJsonMessage.game.ammo.length <= 6){
+      if(bulletType === 'real'){
+        console.log("live")
+      new Audio(gunShoot).play();
+      }
+      else {
+        console.log("blank")
+        new Audio(gunShootBlank).play();
+      }
+    }
+
+    if(lastJsonMessage.game.ammo.length === 1){
+      console.log("reload")
+      setTimeout(() => {
+        new Audio(gunReload).play();
+      }, 2000);
+    }
+    
     sendJsonMessage({
       action: "shoot",
       shooterId: username,

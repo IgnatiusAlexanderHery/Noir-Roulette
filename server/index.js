@@ -18,11 +18,14 @@ const guid = () =>
   [1, 1, 1, 1].map(() => Math.random().toString(16).slice(2, 6)).join("-");
 
 const initializeAmmo = () => {
-  const realBullets  = Math.floor(Math.random() * 7);
-  const ammo = Array(realBullets).fill("real").concat(Array(6-realBullets).fill("fake"));
-  console.log("Ammo List : " + ammo)
-  return ammo.sort(() => Math.random() - 0.5);
+  const realBullets = Math.floor(Math.random() * 3) + 1; // Minimal 1 real bullet
+  const ammo = Array(realBullets).fill("real").concat(Array(6 - realBullets).fill("fake"));
+  console.log("Ammo List before shuffle: ", ammo); // Cetak sebelum diacak
+  const shuffledAmmo = ammo.sort(() => Math.random() - 0.5); // Acak ammo
+  console.log("Ammo List after shuffle: ", shuffledAmmo); // Cetak setelah diacak
+  return shuffledAmmo;
 };
+
 
 // Handle game creation
 const createGame = (roomId) => {
@@ -31,7 +34,6 @@ const createGame = (roomId) => {
     turnIndex: 0,
     ammo: initializeAmmo(),
     started: false,
-    isLiveBullet: false,
   };
 };
 
@@ -52,6 +54,7 @@ wsServer.on("connection", (connection, request) => {
   const playerId = guid();
 
   console.log("Username : " + username + " is attempting to join room " + roomId);
+
 
   if (!games[roomId]) createGame(roomId);
 
@@ -78,7 +81,6 @@ wsServer.on("connection", (connection, request) => {
   connections[playerId] = connection;
 
   game.started =  game.players.length >= 2 ? true  : false;
-  console.log(game);
 
   broadcastGame(roomId);
 
@@ -94,7 +96,14 @@ wsServer.on("connection", (connection, request) => {
     game.players = game.players.filter((player) => player.id !== playerId);
     console.log("Player " + username + " has left room " + roomId);
     delete connections[playerId];
-    broadcastGame(roomId);
+    // Cek apakah room kosong
+    if (game.players.length === 0) {
+      console.log(`Room ${roomId} is empty. Creating a new game instance...`);
+      createGame(roomId); // Buat ulang game untuk room ini
+    } else {
+      // Broadcast state terbaru ke pemain yang masih ada
+      broadcastGame(roomId);
+  }
   });
 });
 
@@ -106,14 +115,12 @@ const handleShoot = (game, shooterId, targetId) => {
   if (game.ammo[0] === "real") {
     console.log("Ammo Is Real, " + shooterId + " Shoot " + target.username )
     target.lives -= 1;
-    game.isLiveBullet=true;
   }
   else{
     console.log("Ammo Is Fake, " + target.username + " Survive")
     if(shooterId === target.username){
       game.turnIndex = (game.turnIndex - 1) % game.players.length;
     }
-    game.isLiveBullet=false;
   }
   game.ammo.shift(); // Remove used bullet
 
