@@ -1,15 +1,28 @@
-import React from "react";
-import "./Gun.css"; // Import the CSS for custom animations
+import React, { useImperativeHandle, forwardRef, useState } from "react";
+import "./Gun.css";
 import GunSprite from "../../assets/GunSprite.png";
 
-const Gun = () => {
-  // Ukuran setiap frame
-  const frameWidth = 32; // Lebar frame asli (px)
-  const frameHeight = 32; // Tinggi frame asli (px)
-  const scaleFactor = 6; // Faktor pembesaran untuk pixel art
-  const containerWidth = frameWidth * scaleFactor; // Lebar container
-  const containerHeight = frameHeight * scaleFactor; // Tinggi container
-  const spriteWidth = frameWidth * 11 * scaleFactor; // Total lebar sprite sheet (11 frame)
+const Gun = forwardRef((props, ref) => {
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const playAnimation = () => {
+    setIsAnimating(true);
+    // Hentikan animasi setelah selesai (1s durasi animasi)
+    setTimeout(() => setIsAnimating(false), 1000);
+  };
+
+  // Expose fungsi `playAnimation` ke komponen luar
+  useImperativeHandle(ref, () => ({
+    playAnimation,
+  }));
+
+  // Ukuran frame dan sprite
+  const frameWidth = 32;
+  const frameHeight = 32;
+  const scaleFactor = 6;
+  const containerWidth = frameWidth * scaleFactor;
+  const containerHeight = frameHeight * scaleFactor;
+  const spriteWidth = frameWidth * 11 * scaleFactor;
 
   return (
     <div
@@ -17,19 +30,21 @@ const Gun = () => {
         width: `${containerWidth}px`,
         height: `${containerHeight}px`,
       }}
-      className="relative mx-auto my-16 overflow-hidden border border-red-600 bg-red-500"
+      className="relative mx-auto my-16 overflow-hidden "
     >
       <img
-        className="max-w-none absolute pixelart animate-move-spritesheet"
+        className={`max-w-none absolute pixelart ${
+          isAnimating ? "animate-move-spritesheet" : ""
+        }`}
         src={GunSprite}
         alt="Gun Sprite"
         style={{
-          width: `${spriteWidth}px`, // Total lebar sprite sheet
-          height: `${containerHeight}px`, // Tinggi sprite
+          width: `${spriteWidth}px`,
+          height: `${containerHeight}px`,
         }}
       />
     </div>
   );
-};
+});
 
 export default Gun;
