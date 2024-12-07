@@ -18,6 +18,7 @@ export function Home({ username, room }) {
   });
 
   const [game, setGame] = useState(null);
+  const [rotation, setRotation] = useState(0); // State untuk rotasi senjata
   const gunRef = useRef(null); // Ref untuk mengontrol Gun
 
   useEffect(() => {
@@ -47,11 +48,18 @@ export function Home({ username, room }) {
     }
   };
 
-  const handleShoot = (targetId) => {
+  const handleShoot = (targetId, targetPosition) => {
     // Mainkan animasi Gun sebelum mengirimkan pesan
     if (gunRef.current) {
       gunRef.current.playAnimation();
     }
+
+    // Hitung sudut rotasi ke target
+    const gunPosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    const deltaX = targetPosition.x - gunPosition.x;
+    const deltaY = targetPosition.y - gunPosition.y;
+    const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI); // Konversi ke derajat
+    setRotation(angle + 90);
 
     sendJsonMessage({
       action: "shoot",
@@ -83,7 +91,7 @@ export function Home({ username, room }) {
   const currentTurnPlayer = game.players[game.turnIndex];
 
   return (
-    <div className="grid bg-gray-100 grid-cols-1 md:grid-cols-3 grid-rows-3 gap-4">
+    <div className="grid bg-gray-100 grid-cols-1 md:grid-cols-3 grid-rows-3 gap-4 justify-items-center">
       {/* Header */}
       <div className="row-start-1 col-span-3 flex flex-col items-center justify-center text-center">
         <h1 className="text-lg font-bold text-red-700 sm:text-md md:text-2xl">
@@ -113,7 +121,9 @@ export function Home({ username, room }) {
             player={game.players[0]}
             username={username}
             currentTurnPlayer={currentTurnPlayer}
-            handleShoot={handleShoot}
+            handleShoot={(targetId) =>
+              handleShoot(targetId, { x: 100, y: 200 }) // Posisi dummy
+            }
           />
         )}
       </div>
@@ -123,13 +133,15 @@ export function Home({ username, room }) {
             player={game.players[1]}
             username={username}
             currentTurnPlayer={currentTurnPlayer}
-            handleShoot={handleShoot}
+            handleShoot={(targetId) =>
+              handleShoot(targetId, { x: window.innerWidth - 100, y: 200 }) // Posisi dummy
+            }
           />
         )}
       </div>
       <div className="row-start-2 col-start-2 flex items-center justify-center">
         {/* Gantikan Center dengan Gun */}
-        <Gun ref={gunRef} />
+        <Gun ref={gunRef} rotation={rotation}/>
       </div>
       <div className="row-start-3 col-start-1">
         {game.players[2] && (
@@ -137,7 +149,9 @@ export function Home({ username, room }) {
             player={game.players[2]}
             username={username}
             currentTurnPlayer={currentTurnPlayer}
-            handleShoot={handleShoot}
+            handleShoot={(targetId) =>
+              handleShoot(targetId, { x: 100, y: window.innerHeight - 150 }) // Posisi dummy
+            }
           />
         )}
       </div>
@@ -147,7 +161,9 @@ export function Home({ username, room }) {
             player={game.players[3]}
             username={username}
             currentTurnPlayer={currentTurnPlayer}
-            handleShoot={handleShoot}
+            handleShoot={(targetId) =>
+              handleShoot(targetId, { x: window.innerWidth - 100, y: window.innerHeight - 50 }) // Posisi dummy
+            }
           />
         )}
       </div>

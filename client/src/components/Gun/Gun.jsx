@@ -7,8 +7,7 @@ const Gun = forwardRef((props, ref) => {
 
   const playAnimation = () => {
     setIsAnimating(true);
-    // Hentikan animasi setelah selesai (1s durasi animasi)
-    setTimeout(() => setIsAnimating(false), 1000);
+    setTimeout(() => setIsAnimating(false), 1000); // Hentikan animasi setelah 1 detik
   };
 
   // Expose fungsi `playAnimation` ke komponen luar
@@ -16,21 +15,22 @@ const Gun = forwardRef((props, ref) => {
     playAnimation,
   }));
 
-  // Ukuran frame dan sprite
   const frameWidth = 32;
   const frameHeight = 32;
   const scaleFactor = 6;
   const containerWidth = frameWidth * scaleFactor;
   const containerHeight = frameHeight * scaleFactor;
   const spriteWidth = frameWidth * 11 * scaleFactor;
+  console.log(props.rotation);
 
   return (
     <div
       style={{
         width: `${containerWidth}px`,
         height: `${containerHeight}px`,
+        transform: `rotate(${props.rotation}deg)`, // Rotasi berdasarkan sudut
       }}
-      className="relative mx-auto my-16 overflow-hidden "
+      className="relative mx-auto my-16 overflow-hidden"
     >
       <img
         className={`max-w-none absolute pixelart ${

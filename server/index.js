@@ -103,6 +103,7 @@ wsServer.on("connection", (connection, request) => {
       createGame(roomId); // Buat ulang game untuk room ini
     } else {
       // Broadcast state terbaru ke pemain yang masih ada
+      game.lastBullet  = null;
       broadcastGame(roomId);
   }
   });
