@@ -28,6 +28,7 @@ export function Home({ username, room }) {
         window.location.reload();
       } else {
         setGame(lastJsonMessage.game);
+        playGunRotation(lastJsonMessage);
         playGunSounds(lastJsonMessage);
       }
     }
@@ -48,23 +49,33 @@ export function Home({ username, room }) {
     }
   };
 
+  const playGunRotation = (message) => {
+    if (message.game.started && message.game.rotation !== null) {
+        if (gunRef.current) {
+          setRotation(rotation)
+          gunRef.current.playAnimation();
+        }
+      }
+  };
+
   const handleShoot = (targetId, targetPosition) => {
     // Mainkan animasi Gun sebelum mengirimkan pesan
-    if (gunRef.current) {
-      gunRef.current.playAnimation();
-    }
+    // if (gunRef.current) {
+    //   gunRef.current.playAnimation();
+    // }
 
     // Hitung sudut rotasi ke target
     const gunPosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     const deltaX = targetPosition.x - gunPosition.x;
     const deltaY = targetPosition.y - gunPosition.y;
     const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI); // Konversi ke derajat
-    setRotation(angle + 90);
+    // setRotation(angle + 90);
 
     sendJsonMessage({
       action: "shoot",
       shooterId: username,
       targetId,
+      rotation: (angle + 90),
     });
   };
 

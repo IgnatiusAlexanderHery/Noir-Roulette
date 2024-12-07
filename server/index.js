@@ -35,6 +35,7 @@ const createGame = (roomId) => {
     ammo: initializeAmmo(),
     started: false,
     lastBullet: null,
+    rotation: null
   };
 };
 
@@ -89,6 +90,7 @@ wsServer.on("connection", (connection, request) => {
     const data = JSON.parse(message);
     if (data.action === "shoot") {
       handleShoot(game, data.shooterId, data.targetId);
+      game.rotation = data.rotation;
       broadcastGame(roomId);
     }
   });
@@ -104,6 +106,7 @@ wsServer.on("connection", (connection, request) => {
     } else {
       // Broadcast state terbaru ke pemain yang masih ada
       game.lastBullet  = null;
+      game.rotation =  null;
       broadcastGame(roomId);
   }
   });
