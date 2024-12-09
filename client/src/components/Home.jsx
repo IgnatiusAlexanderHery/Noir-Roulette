@@ -52,17 +52,13 @@ export function Home({ username, room }) {
   const playGunRotation = (message) => {
     if (message.game.started && message.game.rotation !== null) {
         if (gunRef.current) {
-          setRotation(rotation)
+          setRotation(message.game.rotation)
           gunRef.current.playAnimation();
         }
       }
   };
 
   const handleShoot = (targetId, targetPosition) => {
-    // Mainkan animasi Gun sebelum mengirimkan pesan
-    // if (gunRef.current) {
-    //   gunRef.current.playAnimation();
-    // }
 
     // Hitung sudut rotasi ke target
     const gunPosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
@@ -98,6 +94,27 @@ export function Home({ username, room }) {
         </div>
       </div>
     );
+
+    if (game.win !== null) {
+      return (
+        <div className="flex h-screen items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-green-600">
+              🎉 {game.win.username} Wins the Game! 🎉
+            </h1>
+            <p className="mt-4 text-gray-700">Congratulations!</p>
+            <button
+              onClick={() => sendJsonMessage({
+                action: "reset",
+              })} // Restart Game
+              className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Play Again
+            </button>
+          </div>
+        </div>
+      );
+    }
 
   const currentTurnPlayer = game.players[game.turnIndex];
 

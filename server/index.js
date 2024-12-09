@@ -35,7 +35,8 @@ const createGame = (roomId) => {
     ammo: initializeAmmo(),
     started: false,
     lastBullet: null,
-    rotation: null
+    rotation: null,
+    win: null,
   };
 };
 
@@ -83,7 +84,7 @@ wsServer.on("connection", (connection, request) => {
   connections[playerId] = connection;
 
   game.started =  game.players.length >= 2 ? true  : false;
-
+  game.lastBullet = null;
   broadcastGame(roomId);
 
   connection.on("message", (message) => {
@@ -91,6 +92,20 @@ wsServer.on("connection", (connection, request) => {
     if (data.action === "shoot") {
       handleShoot(game, data.shooterId, data.targetId);
       game.rotation = data.rotation;
+      broadcastGame(roomId);
+    }
+    if (data.action === "reset") {
+      game.players.forEach((player) => {
+        player.lives = 3; // Reset lives
+      });
+      game.ammo = initializeAmmo(); // Reset ammo
+      game.turnIndex = 0; // Reset turn
+      game.win = null; // Clear winner
+      game.lastBullet= null,
+      game.rotation= null,
+
+  
+      // Kirim data game yang telah di-reset ke semua client
       broadcastGame(roomId);
     }
   });
@@ -138,6 +153,13 @@ const handleShoot = (game, shooterId, targetId) => {
   
   if (target.lives <= 0) {
     console.log(`${target.username} is eliminated!`);
+  }
+
+  const alivePlayers = game.players.filter((player) => player.lives > 0);
+  if (alivePlayers.length === 1) {
+    game.win = alivePlayers[0]; // Set the winner
+    console.log(`${game.win.username} wins the game!`);
+    return; // End the game logic here
   }
 
   console.log("Ammo : " + game.ammo)
