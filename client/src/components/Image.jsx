@@ -10,7 +10,9 @@ const scale = 2;
 
 export const LivesImg = () => {
     return(
-        <img src={Lives} alt="Lives" width={pixel * scale} height={pixel * scale}/>
+        <img
+        className="w-auto h-auto max-w-[25%]"
+        src={Lives} alt="Lives" width={pixel * scale} height={pixel * scale}/>
     )
 }
 
@@ -28,7 +30,9 @@ export const LivesBulletImg = () => {
 
 export const NoLivesImg = () => {
     return(
-        <img src={NoLives} alt="NoLives" width={pixel * scale} height={pixel * scale} />
+        <img 
+        className="w-auto h-auto max-w-[25%]"
+        src={NoLives} alt="NoLives" width={pixel * scale} height={pixel * scale} />
     )
 }
 
