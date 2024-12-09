@@ -1,7 +1,21 @@
-import React from "react"
+import React,  { useState } from "react"
 import { LivesImg, NoLivesImg } from "./Image"
 
 export const PlayerBox = ({ player, username, currentTurnPlayer, handleShoot }) => {
+
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+  const handleShootWithDelay = (targetId) => {
+    if (!isButtonDisabled) {
+      setIsButtonDisabled(true);
+      handleShoot(targetId);
+
+      setTimeout(() => {
+        setIsButtonDisabled(false);
+      }, 1000);
+    }
+  };
+  
     return(
         <div className="flex flex-col items-center justify-between w-full max-w-[120px] sm:max-w-[150px] md:max-w-[200px] p-4 bg-white border border-black rounded-md shadow-md">
       <img
@@ -29,14 +43,16 @@ export const PlayerBox = ({ player, username, currentTurnPlayer, handleShoot }) 
           {player.id === currentTurnPlayer.id ? (
             <button
               className="px-3 py-1 mt-2 text-xs md:text-sm text-white bg-red-600 rounded hover:bg-red-700"
-              onClick={() => handleShoot(player.id)}
+              onClick={() => handleShootWithDelay(player.id)}
+              disabled={isButtonDisabled}
             >
               Shoot Yourself
             </button>
           ) : (
             <button
               className="px-3 py-1 mt-2 text-xs md:text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
-              onClick={() => handleShoot(player.id)}
+              onClick={() => handleShootWithDelay(player.id)}
+              disabled={isButtonDisabled}
             >
               Shoot Enemy
             </button>

@@ -18,8 +18,8 @@ export function Home({ username, room }) {
   });
 
   const [game, setGame] = useState(null);
-  const [rotation, setRotation] = useState(0); // State untuk rotasi senjata
-  const gunRef = useRef(null); // Ref untuk mengontrol Gun
+  const [rotation, setRotation] = useState(0);
+  const gunRef = useRef(null);
 
   useEffect(() => {
     if (lastJsonMessage) {
@@ -60,12 +60,10 @@ export function Home({ username, room }) {
 
   const handleShoot = (targetId, targetPosition) => {
 
-    // Hitung sudut rotasi ke target
     const gunPosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     const deltaX = targetPosition.x - gunPosition.x;
     const deltaY = targetPosition.y - gunPosition.y;
-    const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI); // Konversi ke derajat
-    // setRotation(angle + 90);
+    const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
 
     sendJsonMessage({
       action: "shoot",
@@ -106,7 +104,7 @@ export function Home({ username, room }) {
             <button
               onClick={() => sendJsonMessage({
                 action: "reset",
-              })} // Restart Game
+              })}
               className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
               Play Again
@@ -150,7 +148,7 @@ export function Home({ username, room }) {
             username={username}
             currentTurnPlayer={currentTurnPlayer}
             handleShoot={(targetId) =>
-              handleShoot(targetId, { x: 100, y: 200 }) // Posisi dummy
+              handleShoot(targetId, { x: 100, y: 200 })
             }
           />
         )}
@@ -162,7 +160,7 @@ export function Home({ username, room }) {
             username={username}
             currentTurnPlayer={currentTurnPlayer}
             handleShoot={(targetId) =>
-              handleShoot(targetId, { x: window.innerWidth - 100, y: 200 }) // Posisi dummy
+              handleShoot(targetId, { x: window.innerWidth - 100, y: 200 })
             }
           />
         )}
@@ -178,7 +176,7 @@ export function Home({ username, room }) {
             username={username}
             currentTurnPlayer={currentTurnPlayer}
             handleShoot={(targetId) =>
-              handleShoot(targetId, { x: 100, y: window.innerHeight - 150 }) // Posisi dummy
+              handleShoot(targetId, { x: 100, y: window.innerHeight - 150 })
             }
           />
         )}
@@ -190,7 +188,7 @@ export function Home({ username, room }) {
             username={username}
             currentTurnPlayer={currentTurnPlayer}
             handleShoot={(targetId) =>
-              handleShoot(targetId, { x: window.innerWidth - 100, y: window.innerHeight - 50 }) // Posisi dummy
+              handleShoot(targetId, { x: window.innerWidth - 100, y: window.innerHeight - 50 })
             }
           />
         )}

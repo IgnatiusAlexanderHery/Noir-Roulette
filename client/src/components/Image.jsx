@@ -31,7 +31,7 @@ export const LivesBulletImg = () => {
 export const NoLivesImg = () => {
     return(
         <img 
-        className="w-auto h-auto max-w-[25%]"
+        className="h-auto max-w-[25%]"
         src={NoLives} alt="NoLives" width={pixel * scale} height={pixel * scale} />
     )
 }

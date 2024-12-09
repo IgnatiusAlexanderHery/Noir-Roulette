@@ -7,10 +7,9 @@ const Gun = forwardRef((props, ref) => {
 
   const playAnimation = () => {
     setIsAnimating(true);
-    setTimeout(() => setIsAnimating(false), 1000); // Hentikan animasi setelah 1 detik
+    setTimeout(() => setIsAnimating(false), 1000);
   };
 
-  // Expose fungsi `playAnimation` ke komponen luar
   useImperativeHandle(ref, () => ({
     playAnimation,
   }));
@@ -21,14 +20,13 @@ const Gun = forwardRef((props, ref) => {
   const containerWidth = frameWidth * scaleFactor;
   const containerHeight = frameHeight * scaleFactor;
   const spriteWidth = frameWidth * 11 * scaleFactor;
-  console.log(props.rotation);
 
   return (
     <div
       style={{
         width: `${containerWidth}px`,
         height: `${containerHeight}px`,
-        transform: `rotate(${props.rotation}deg)`, // Rotasi berdasarkan sudut
+        transform: `rotate(${props.rotation}deg)`,
       }}
       className="relative mx-auto my-16 overflow-hidden"
     >
