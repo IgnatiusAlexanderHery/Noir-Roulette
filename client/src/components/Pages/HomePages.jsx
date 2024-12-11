@@ -16,11 +16,6 @@ const HomePages = () => {
                         How to Play
                     </button>
                 </Link>
-                <Link to="/register">
-                    <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                        Register
-                    </button>
-                </Link>
             </div>
         </div>
     );
