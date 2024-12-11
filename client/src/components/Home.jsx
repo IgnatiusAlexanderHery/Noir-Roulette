@@ -85,7 +85,6 @@ function Home({ username, room }) {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              {/* SVG Paths */}
             </svg>
           </div>
           <p>Waiting for players...</p>

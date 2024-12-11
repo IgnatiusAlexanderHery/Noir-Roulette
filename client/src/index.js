@@ -4,11 +4,13 @@ import './index.css';
 import GamePages from './components/Pages/GamePages';
 import { BrowserRouter as Router, Routes, Route } from "react-router";
 import HomePages from './components/Pages/HomePages';
+import HowToPlayPage from './components/Pages/HowToPlayPages';
 
 const App = () => {
     return <Router>
         <Routes>
             <Route path="/" element={<HomePages />} />
+            <Route path="/howtoplay" element={<HowToPlayPage />} />
             <Route path="/game" element={<GamePages />} />
         </Routes>
     </Router>

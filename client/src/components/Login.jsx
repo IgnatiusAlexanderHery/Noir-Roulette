@@ -1,11 +1,15 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 
 function Login({ onSubmit }) {
     const [username, setUsername] = useState('');
     const [room, setRoom] = useState('');
 
     return (
-        <div className='bg-slate-400 flex flex-col items-center justify-center h-screen'>
+        <div className='bg-gray-900 text-white flex flex-col items-center justify-center h-screen'>
+            <div className="absolute top-10 left-10">
+                <Link to="/" className="text-white text-lg font-bold">Back to Home</Link> 
+            </div>
             <h1>Welcome</h1>
             <p>What should people call you?</p>
             <form
@@ -40,6 +44,7 @@ function Login({ onSubmit }) {
             </form>
         </div>
     );
+    
 }
 
 export default Login;
