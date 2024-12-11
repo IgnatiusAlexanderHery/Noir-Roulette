@@ -1,21 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import { Home } from './components/Home';
-import { Login } from './components/Login';
+import GamePages from './components/Pages/GamePages';
+import { BrowserRouter as Router, Routes, Route } from "react-router";
 
 const App = () => {
-    const [user, setUser] = useState(null); // Menyimpan user data (username dan ID)
-
-    return user ? (
-        <Home username={user.username} room ={user.room} />
-    ) : (
-        <Login
-            onSubmit={(userData) => {
-                setUser(userData); // Menerima username dan ID dari Login
-            }}
-        />
-    );
+    return <Router>
+        <Routes>
+            <Route path="/" element={<GamePages />} />
+        </Routes>
+    </Router>
 };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

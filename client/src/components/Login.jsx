@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export function Login({ onSubmit }) {
+function Login({ onSubmit }) {
     const [username, setUsername] = useState('');
     const [room, setRoom] = useState('');
 
@@ -41,3 +41,5 @@ export function Login({ onSubmit }) {
         </div>
     );
 }
+
+export default Login;

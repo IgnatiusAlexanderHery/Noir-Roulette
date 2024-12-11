@@ -7,7 +7,7 @@ import gunShoot from "../assets/gun-shoot.wav";
 import gunShootBlank from "../assets/gun-shoot-blank.wav";
 import gunReload from "../assets/gun-reload.wav";
 
-export function Home({ username, room }) {
+function Home({ username, room }) {
   const WS_URL = process.env.REACT_APP_WEBSOCKET_URL || "ws://localhost:3000";
   const { sendJsonMessage, lastJsonMessage } = useWebSocket(WS_URL, {
     share: true,
@@ -196,3 +196,5 @@ export function Home({ username, room }) {
     </div>
   );
 }
+
+export default Home;
